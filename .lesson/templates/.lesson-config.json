@@ -1,0 +1,37 @@
+{
+  "course": {
+    "title": "Course Title",
+    "instructor": {
+      "name": "Instructor Name",
+      "email": "instructor@example.com"
+    },
+    "metadata": {
+      "level": "Intermediate",
+      "language": "English",
+      "duration_per_lesson": 60
+    }
+  },
+  "lessons": [
+    {
+      "number": 1,
+      "id": "introduction-topic",
+      "title": "Introduction to the Topic",
+      "module": "Module 1",
+      "status": "not-started"
+    },
+    {
+      "number": 2,
+      "id": "core-concepts",
+      "title": "Core Concepts",
+      "module": "Module 1",
+      "status": "not-started"
+    },
+    {
+      "number": 3,
+      "id": "hands-on-lab",
+      "title": "Hands-on Lab",
+      "module": "Module 2",
+      "status": "not-started"
+    }
+  ]
+}

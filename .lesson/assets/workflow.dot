@@ -1,0 +1,36 @@
+digraph workflow {
+    rankdir=TB;
+    node [shape=box, style=rounded];
+    
+    start [label="User Request\n'Prepare a lesson on X'", shape=ellipse, style=filled, fillcolor=lightblue];
+    mod [label="discussion-moderator\nOrchestrates discussion", style=filled, fillcolor=lightgreen];
+    teacher1 [label="co-teacher 1\nPerspective A"];
+    teacher2 [label="co-teacher 2\nPerspective B"];
+    teacher3 [label="co-teacher 3\nPerspective C"];
+    highlights [label="HIGHLIGHTS.md\nStructured lesson plan", shape=note, style=filled, fillcolor=lightyellow];
+    planner [label="lesson-planner\n(optional)", style=dashed];
+    discourse [label="DISCOURSE.md\nDetailed narrative", shape=note, style=filled, fillcolor=lightyellow];
+    slides_maker [label="slides-maker\nSlides generator"];
+    slides [label="SLIDES.md\nMARP presentation", shape=note, style=filled, fillcolor=lightyellow];
+    pdf [label="SLIDES.pdf\n(optional)", shape=note, style=filled, fillcolor=lightgray];
+    repo_creator [label="repository-creator\n(optional)", style=dashed, fillcolor=lightcoral];
+    repo [label="New GitHub Repository\nPublished lesson", shape=cylinder, style=filled, fillcolor=lightcoral];
+    
+    start -> mod;
+    mod -> teacher1;
+    mod -> teacher2;
+    mod -> teacher3;
+    teacher1 -> highlights [label="4 discussion phases"];
+    teacher2 -> highlights [label="Steel-manning"];
+    teacher3 -> highlights [label="debate"];
+    highlights -> planner [style=dashed];
+    planner -> discourse [style=dashed];
+    highlights -> slides_maker;
+    discourse -> slides_maker [style=dashed];
+    slides_maker -> slides;
+    slides -> pdf [label="marp-cli"];
+    highlights -> repo_creator [style=dashed];
+    discourse -> repo_creator [style=dashed];
+    slides -> repo_creator [style=dashed];
+    repo_creator -> repo [style=dashed];
+}

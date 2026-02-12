@@ -1,0 +1,22 @@
+{
+  "name": "AI Based Lesson",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  
+  "features": {
+    "ghcr.io/devcontainers/features/github-cli:1": {},
+    "ghcr.io/devcontainers/features/copilot-cli:1": {}
+  },
+  
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "marp-team.marp-vscode",
+        "ms-azuretools.vscode-containers"
+      ]
+    }
+  },
+  
+  "remoteUser": "node"
+}
