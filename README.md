@@ -4,6 +4,27 @@
 
 Chat-first toolkit for planning complete courses and generating lesson artifacts with specialized Copilot agents.
 
+## Web app (Netlify)
+
+A browser-based version lives in `site/`. It runs entirely client-side (localStorage) and exports `.lesson-config.json`, lesson README files, and full course ZIP archives.
+
+### Deploy on Netlify
+
+1. Connect this repository at [app.netlify.com](https://app.netlify.com)
+2. Build settings (auto-detected from `netlify.toml`):
+   - **Publish directory:** `site`
+   - **Build command:** none required
+3. Deploy — no environment variables needed
+
+### Local preview
+
+```bash
+npm install
+npm run dev
+```
+
+Open `http://localhost:8888`.
+
 ## Recommended start (chat-first)
 
 Use `@course-planner` as the first step to design the whole course, then run lesson-level agents.

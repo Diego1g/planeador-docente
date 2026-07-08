@@ -41,7 +41,7 @@ export function exportLessonBundle(state, lesson) {
 }
 
 export async function exportFullCourseZip(state) {
-  const JSZip = (await import('https://cdn.jsdelivr.net/npm/jszip@3.10.1/+esm')).default;
+  const { default: JSZip } = await import('./vendor/jszip.esm.js');
   const zip = new JSZip();
 
   zip.file('.lesson-config.json', JSON.stringify(buildLessonConfig(state), null, 2));
