@@ -46,3 +46,10 @@ temp/
 
 # Session state and artifacts
 .copilot/
+
+# Local Netlify folder
+.netlify
+
+# Node
+node_modules/
+deno.lock

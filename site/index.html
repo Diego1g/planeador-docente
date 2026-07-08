@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Lesson Planner</title>
+  <meta name="description" content="Plan courses and lessons in the browser. Export artifacts for MARP slides and Copilot agents.">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="app-header">
+    <h1>AI Lesson Planner</h1>
+    <p>Plan courses, scaffold lessons, and export artifacts — runs entirely in your browser.</p>
+  </header>
+
+  <main class="layout">
+    <div class="stats">
+      <div class="stat-card"><span class="num" id="stat-total">0</span><span class="label">Lessons</span></div>
+      <div class="stat-card"><span class="num" id="stat-progress">0</span><span class="label">In progress</span></div>
+      <div class="stat-card"><span class="num" id="stat-done">0</span><span class="label">Completed</span></div>
+    </div>
+
+    <nav class="nav-tabs" aria-label="Main navigation">
+      <button type="button" data-nav="course" class="active">Course</button>
+      <button type="button" data-nav="lessons">Lessons</button>
+      <button type="button" data-nav="editor">Editor</button>
+      <button type="button" data-nav="export">Export</button>
+    </nav>
+
+    <!-- Course -->
+    <section id="view-course" class="panel">
+      <h2>Course metadata</h2>
+      <form id="course-form">
+        <div class="form-grid">
+          <div>
+            <label for="title">Course title</label>
+            <input id="title" name="title" type="text" placeholder="e.g. Introduction to Python" required>
+          </div>
+          <div>
+            <label for="audience">Target audience</label>
+            <input id="audience" name="audience" type="text" placeholder="e.g. Upper-secondary students">
+          </div>
+          <div>
+            <label for="instructor_name">Instructor name</label>
+            <input id="instructor_name" name="instructor_name" type="text">
+          </div>
+          <div>
+            <label for="instructor_email">Instructor email</label>
+            <input id="instructor_email" name="instructor_email" type="email">
+          </div>
+          <div>
+            <label for="level">Level</label>
+            <select id="level" name="level">
+              <option>Beginner</option>
+              <option selected>Intermediate</option>
+              <option>Advanced</option>
+            </select>
+          </div>
+          <div>
+            <label for="language">Language</label>
+            <input id="language" name="language" type="text" value="English">
+          </div>
+          <div>
+            <label for="duration">Duration per lesson (min)</label>
+            <input id="duration" name="duration" type="number" min="15" max="240" value="60">
+          </div>
+        </div>
+        <div class="toolbar">
+          <button type="submit" class="btn">Save course</button>
+        </div>
+      </form>
+      <p class="hint">Data is stored in your browser (localStorage). Export regularly to keep backups.</p>
+    </section>
+
+    <!-- Lessons -->
+    <section id="view-lessons" class="panel" hidden>
+      <h2>Lesson index</h2>
+      <div class="toolbar">
+        <button type="button" class="btn" id="btn-add-lesson">+ Add lesson</button>
+        <input type="number" id="bulk-count" min="1" max="30" value="5" aria-label="Bulk count">
+        <input type="text" id="bulk-prefix" placeholder="Lesson prefix" value="Lesson" aria-label="Bulk prefix">
+        <button type="button" class="btn btn-secondary" id="btn-bulk-add">Bulk add</button>
+        <button type="button" class="btn btn-success" id="btn-scaffold-all">Scaffold all</button>
+      </div>
+      <div style="overflow-x:auto">
+        <table class="lessons-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>ID</th>
+              <th>Title</th>
+              <th>Module</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="lessons-tbody"></tbody>
+        </table>
+      </div>
+      <p class="hint">Lesson IDs must be lowercase kebab-case (e.g. <code>intro-python</code>). Use Scaffold to fill artifact templates.</p>
+    </section>
+
+    <!-- Editor -->
+    <section id="view-editor" class="panel" hidden>
+      <div id="editor-empty" class="empty-state">
+        <p>Select a lesson from the Lessons tab and click <strong>Edit</strong>.</p>
+      </div>
+      <div id="editor-panel" hidden>
+        <div class="editor-header">
+          <div>
+            <h2 id="editor-title">Lesson editor</h2>
+            <span id="editor-status"></span>
+          </div>
+          <div class="toolbar">
+            <button type="button" class="btn btn-secondary" id="btn-init-templates">Reset templates</button>
+            <button type="button" class="btn" id="btn-export-lesson">Download lesson files</button>
+          </div>
+        </div>
+        <div class="editor-tabs">
+          <button type="button" class="active" data-tab="panel-highlights">Highlights</button>
+          <button type="button" data-tab="panel-discourse">Discourse</button>
+          <button type="button" data-tab="panel-slides">Slides (MARP)</button>
+          <button type="button" data-tab="panel-prompts">Copilot prompts</button>
+        </div>
+        <div id="panel-highlights" data-panel>
+          <textarea id="artifact-highlights" aria-label="Highlights markdown"></textarea>
+        </div>
+        <div id="panel-discourse" data-panel hidden>
+          <textarea id="artifact-discourse" aria-label="Discourse markdown"></textarea>
+        </div>
+        <div id="panel-slides" data-panel hidden>
+          <textarea id="artifact-slides" aria-label="Slides markdown"></textarea>
+        </div>
+        <div id="panel-prompts" data-panel hidden>
+          <p class="hint">Copy these prompts into GitHub Copilot Chat to continue the chat-first workflow.</p>
+          <div id="handoff-prompts"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Export -->
+    <section id="view-export" class="panel" hidden>
+      <h2>Export &amp; import</h2>
+      <p id="export-summary" class="hint"></p>
+      <div class="export-actions">
+        <div class="export-card">
+          <h3>.lesson-config.json</h3>
+          <p class="hint">Course metadata and lesson list for scripts and agents.</p>
+          <button type="button" class="btn" id="btn-export-config">Download JSON</button>
+        </div>
+        <div class="export-card">
+          <h3>lessons/README.md</h3>
+          <p class="hint">Course outline with lesson index table.</p>
+          <button type="button" class="btn" id="btn-export-readme">Download README</button>
+        </div>
+        <div class="export-card">
+          <h3>Full course ZIP</h3>
+          <p class="hint">Complete folder structure matching the original toolkit layout.</p>
+          <button type="button" class="btn btn-success" id="btn-export-zip">Download ZIP</button>
+        </div>
+        <div class="export-card">
+          <h3>Import config</h3>
+          <p class="hint">Load a previously exported <code>.lesson-config.json</code>.</p>
+          <input type="file" id="import-config" accept=".json,application/json">
+        </div>
+        <div class="export-card">
+          <h3>Reset</h3>
+          <p class="hint">Clear all local data and start over.</p>
+          <button type="button" class="btn btn-danger" id="btn-reset">Reset all data</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
